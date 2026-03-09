@@ -25,6 +25,15 @@ import pygame, random
 # ---- Initialize pygame ----
 pygame.init()
 
+RED_MONSTER    = 0
+BLUE_MONSTER   = 1
+GREEN_MONSTER  = 2
+YELLOW_MONSTER = 3
+
+MONSTER_COLORS    = [RED, BLUE, GREEN, YELLOW]        # RED/BLUE etc. already defined
+MONSTER_NAMES     = ["RED", "BLUE", "GREEN", "YELLOW"]
+MONSTERS_PER_TYPE = 4    # how many of each type spawn per round
+
 # ---- Display Window ----
 WINDOW_WIDTH  = 1200
 WINDOW_HEIGHT = 700
@@ -182,18 +191,48 @@ class Game():
     # ---- These methods are stubs — you'll build them on Days 2 & 3 ----
 
     def check_collisions(self):
-        """Check for collisions between player and monsters — Day 2"""
+        """Check for collisions between player and monsters — Day 3"""
         pass
 
     def start_new_round(self):
         """Start a new round — Day 2"""
+        self.score += int(10000 * self.round_number / (1 + self.round_time))
         self.round_number += 1
         self.round_time    = 0
         self.frame_count   = 0
+        self.player.warps += 1
+        for monster in self.monster_group:
+            self.monster_group.remove(monster)
+        for i in range(self.round_number):
+            self.monster_group.add(
+                Monster(
+                    random.randint(0,WINDOW_WIDTH - 64),
+                    random.randint(100,WINDOW_HEIGHT - 164),
+                    self.target_monster_images[0], 0))
+            self.monster_group.add(
+                Monster(
+                    random.randint(0,WINDOW_WIDTH - 64),
+                    random.randint(100,WINDOW_HEIGHT - 164),
+                    self.target_monster_images[1], 1))
+            self.monster_group.add(
+                Monster(
+                    random.randint(0,WINDOW_WIDTH - 64),
+                    random.randint(100,WINDOW_HEIGHT - 164),
+                    self.target_monster_images[2], 2))
+            self.monster_group.add(
+                Monster(
+                    random.randint(0,WINDOW_WIDTH - 64),
+                    random.randint(100,WINDOW_HEIGHT - 164),
+                    self.target_monster_images[3], 3))
+
+            self.choose_new_target()
+            self.next_level_sound.play()
 
     def choose_new_target(self):
         """Choose a new target monster — Day 2"""
-        pass
+        target_monster = random.choice(self.monster_group.sprites())
+        self.target_monster_type = target_monster.type
+        self.target_monster_image = target_monster.image
 
     def pause_game(self, main_text, sub_text):
         """Pause the game and show message — Day 3"""
