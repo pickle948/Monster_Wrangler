@@ -234,6 +234,15 @@ class Game():
         self.target_monster_type = target_monster.type
         self.target_monster_image = target_monster.image
 
+    def start_new_round(self):
+        self.monster_group.empty()
+        self.player.reset()
+        self.round_number += 1
+        self.round_time    = 0
+        self.frame_count   = 0
+        if self.next_level_sound:
+            self.next_level_sound.play()
+
     def pause_game(self, main_text, sub_text):
         """Pause the game and show message — Day 3"""
         global running
