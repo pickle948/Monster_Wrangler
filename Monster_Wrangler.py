@@ -30,7 +30,7 @@ BLUE_MONSTER   = 1
 GREEN_MONSTER  = 2
 YELLOW_MONSTER = 3
 
-MONSTER_COLORS    = [RED, BLUE, GREEN, YELLOW]        # RED/BLUE etc. already defined
+       # RED/BLUE etc. already defined
 MONSTER_NAMES     = ["RED", "BLUE", "GREEN", "YELLOW"]
 MONSTERS_PER_TYPE = 4    # how many of each type spawn per round
 
@@ -191,8 +191,24 @@ class Game():
     # ---- These methods are stubs — you'll build them on Days 2 & 3 ----
 
     def check_collisions(self):
-        """Check for collisions between player and monsters — Day 3"""
-        pass
+        collided_monster = pygame.sprite.spritecollideany(self.player, self.monster_group)
+        if not collided_monster == None:
+            if collided_monster.type == self.target_monster_type:
+                collided_monster.kill()
+                self.player.catch_sound()
+                self.score += 100
+                if self.monster_group == None:
+                    self.start_new_round()
+                else:
+                    self.pause_game("OOPS!", "Press Enter to continue")
+            else:
+                self.player.lives -= 1
+                self.player.die_sound()
+                if self.player.lives == 0:
+                    self.pause_game("GAME OVER", "Press Enter to play again")
+                    self.reset_game()
+                else:
+                    self.pause_game("OOPS!", "Press Enter to continue")
 
     def start_new_round(self):
         """Start a new round — Day 2"""
@@ -234,15 +250,6 @@ class Game():
         self.target_monster_type = target_monster.type
         self.target_monster_image = target_monster.image
 
-    def start_new_round(self):
-        self.monster_group.empty()
-        self.player.reset()
-        self.round_number += 1
-        self.round_time    = 0
-        self.frame_count   = 0
-        if self.next_level_sound:
-            self.next_level_sound.play()
-
     def pause_game(self, main_text, sub_text):
         """Pause the game and show message — Day 3"""
         global running
@@ -273,9 +280,11 @@ class Game():
                     running   = False
 
     def reset_game(self):
-        """Reset the game — Day 3"""
-        pass
-
+        self.score = 0
+        self.player.lives = 5
+        self.player.warps = 2
+        self.round_number = 0
+        self.start_new_round()
 
 # ==============================================================
 #  TODO 4 — Player.__init__   (10 min)
