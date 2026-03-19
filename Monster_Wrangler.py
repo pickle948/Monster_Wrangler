@@ -122,7 +122,7 @@ class Game():
         if collided_monster:
             # Caught the correct monster
             if collided_monster.type == self.target_monster_type:
-                self.score += 100 * self.round_number
+                self.score += max(50, 300 - self.round_time * 5)
                 self.player.catch_sound.play()
                 # Remove caught monster
                 collided_monster.remove(self.monster_group)
@@ -146,7 +146,7 @@ class Game():
     def start_new_round(self):
         """Populate board with new monsters"""
         # Provide a score bonus based on how quickly the round was finished
-        self.score += int(10000 * self.round_number / (1 + self.round_time))
+        self.score += max(0, 5000 - self.round_time * 25)
 
         # Reset round values
         self.round_time = 0
